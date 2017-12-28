@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RuntimeIdentifiers>win10-x64;</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RavenDB.Client" Version="4.0.0-custom-40" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BenchTests\BenchTests.csproj" />
+  </ItemGroup>
+</Project>
