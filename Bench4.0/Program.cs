@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using BenchTests;
 using Raven.Client;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;

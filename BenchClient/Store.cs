@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using BenchTests;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols;
 using Raven.Client.Documents;
 using System;
@@ -11,19 +12,60 @@ namespace BenchClient
 {
     public class Store
     {
-        public static Lazy<DocumentStore> Node1Instance = new Lazy<DocumentStore>(()=>
+        private static DocumentStore m_node1Instance;
+        public static DocumentStore Node1Instance
         {
-            return TestInstance.GenerateStore(TestInstance.Node1Url, "Bench");
-        });
-        public static Lazy<DocumentStore> Node2Instance = new Lazy<DocumentStore>(() =>
+            get
+            {
+                if (m_node1Instance == null)
+                {
+                    m_node1Instance = TestInstance?.GenerateStore(TestInstance.Node1Url, "Bench");
+                }
+                return m_node1Instance;
+            }
+            set
+            {
+                m_node1Instance = value;
+            }
+        }
+
+
+        private static DocumentStore m_node2Instance;
+        public static DocumentStore Node2Instance
         {
-            return TestInstance.GenerateStore(TestInstance.Node2Url, "Bench");
-        });
-        public static Lazy<DocumentStore> Node3Instance = new Lazy<DocumentStore>(() =>
+            get
+            {
+                if (m_node2Instance == null)
+                {
+                    m_node2Instance = TestInstance?.GenerateStore(TestInstance.Node2Url, "Bench");
+                }
+                return m_node2Instance;
+            }
+            set
+            {
+                m_node2Instance = value;
+            }
+        }
+
+        private static DocumentStore m_node3Instance;
+        public static DocumentStore Node3Instance
         {
-            return TestInstance.GenerateStore(TestInstance.Node3Url, "Bench");
-        });
-        public static BenchTests.BenchTest TestInstance;
+            get
+            {
+                if (m_node3Instance == null)
+                {
+                    m_node1Instance = TestInstance.GenerateStore(TestInstance.Node3Url, "Bench");
+                }
+                return m_node3Instance;
+            }
+            set
+            {
+                m_node3Instance = value;
+            }
+        }
+
+
+        public static BenchTest TestInstance;
 
         static Store()
         {
@@ -45,6 +87,19 @@ namespace BenchClient
                 cacheSizeInMB!= null? long.Parse(cacheSizeInMB):1000
                 );           
 
+        }
+
+        public static void ChangeConfig(string node1Url, string node2Url, string node3Url,int? documentsCount, long? cacheSizeInMB)
+        {
+             TestInstance = new BenchTests.BenchTest(node1Url ?? "http://localhsot:8080",
+                node2Url ?? "http://localhsot:8081",
+                node3Url ?? "http://localhsot:8082",
+                documentsCount != null ? (int)(documentsCount) : TestInstance?.DocumentsCount ?? 100_000,
+                cacheSizeInMB != null ? (int)cacheSizeInMB  : TestInstance?.DocumentsCount ?? 1000
+                );
+            Node1Instance = TestInstance.GenerateStore(TestInstance.Node1Url, "Bench");
+            Node2Instance = TestInstance.GenerateStore(TestInstance.Node2Url, "Bench");
+            Node3Instance = TestInstance.GenerateStore(TestInstance.Node3Url, "Bench");
         }
     }
 }

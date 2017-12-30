@@ -105,7 +105,7 @@ namespace BenchTests
             }
         }
 
-        private async Task SetupCluster(DocumentStore node1, DocumentStore node2, DocumentStore node3)
+        public async Task SetupCluster(DocumentStore node1, DocumentStore node2, DocumentStore node3)
         {
             RequestExecutor requestExecutor = node1.GetRequestExecutor();
             using (requestExecutor.ContextPool.AllocateOperationContext(out var context))
@@ -118,18 +118,7 @@ namespace BenchTests
                 await requestExecutor.ExecuteAsync(new AddNodeToClusterCommand { NodeToAddUrl = node3.Urls[0] }, context);
             }
         }
-
-        public async Task ToTestForParallelClients()
-        {
-            ServicePointManager.DefaultConnectionLimit = 200;
-            ThreadPool.SetMinThreads(50, 50);
-
-            using (var store1 = GenerateStore(Node1Url, "Bench"))
-            {
-                await SerialStoresWithOtherClients(store1);
-            }
-
-        }
+        
         public async Task DoTest()
         {
             ServicePointManager.DefaultConnectionLimit = 200;
@@ -472,7 +461,7 @@ namespace BenchTests
 
         }
 
-        private async Task<string> StoreSingleDoc(DocumentStore store, string documentDatabase)
+        public async Task<string> StoreSingleDoc(DocumentStore store, string documentDatabase)
         {
             using (var session = store.OpenAsyncSession(documentDatabase))
             {
@@ -483,7 +472,7 @@ namespace BenchTests
             }
         }
 
-        private async Task AddDatabaseToNode(string databaseName, DocumentStore leader, DocumentStore storeToAddTo)
+        public async Task AddDatabaseToNode(string databaseName, DocumentStore leader, DocumentStore storeToAddTo)
         {
             RequestExecutor requestExecuter = leader.GetRequestExecutor();
             if (requestExecuter.TopologyNodes.Count == 3)
@@ -507,7 +496,7 @@ namespace BenchTests
             }
         }
 
-        private async Task ResetDatabase(string url, string databaseName, string nodeTagToCreateIn = "A")
+        public async Task ResetDatabase(string url, string databaseName, string nodeTagToCreateIn = "A")
         {
             using (var store = GenerateStore(url, databaseName))
             {
@@ -538,9 +527,9 @@ namespace BenchTests
 
             }
         }
-        private async Task SerialStores(DocumentStore store)
-        {
 
+        public async Task SerialStores(DocumentStore store)
+        {
             var sp = Stopwatch.StartNew();
             for (int i = 0; i < DocumentsCount; i++)
             {
@@ -552,18 +541,10 @@ namespace BenchTests
             }
 
             LogProgress($"Serial stores", sp.ElapsedMilliseconds);
-
         }
 
-        private async Task SerialStoresWithOtherClients(DocumentStore store)
+        public async Task ParallelStores(DocumentStore store, int multiplier)
         {
-
-        }
-
-
-        private async Task ParallelStores(DocumentStore store, int multiplier)
-        {
-
             var a = new Action(async () => { });
             var sp = Stopwatch.StartNew();
 
@@ -583,7 +564,7 @@ namespace BenchTests
             LogProgress($"Parallel stores (x{multiplier})", sp.ElapsedMilliseconds);
 
         }
-        private async Task RunInParallel(int multiplier, Func<int, Task> getAsyncAction, int iterations)
+        public async Task RunInParallel(int multiplier, Func<int, Task> getAsyncAction, int iterations)
         {
             var parallelismLevel = Environment.ProcessorCount * multiplier;
             var tasks = Enumerable.Range(0, iterations).Select(i =>
@@ -604,7 +585,7 @@ namespace BenchTests
                 i += itemsToTake;
             }
         }
-        private async Task SerialBatchStores(DocumentStore store)
+        public async Task SerialBatchStores(DocumentStore store)
         {
 
             var sp = Stopwatch.StartNew();
@@ -621,7 +602,7 @@ namespace BenchTests
             LogProgress($"Serial batches stores", sp.ElapsedMilliseconds);
 
         }
-        private async Task<string> ParallelBatchStores(DocumentStore store, int multiplier, string dbName = null, bool waitForReplication = false, bool retreieveLastId = false)
+        public async Task<string> ParallelBatchStores(DocumentStore store, int multiplier, string dbName = null, bool waitForReplication = false, bool retreieveLastId = false)
         {
             var idsAndEtags = new ConcurrentBag<(string DocId, int Etag)>();
 
@@ -689,7 +670,7 @@ namespace BenchTests
             };
         }
 
-        private async Task BulkInsert(DocumentStore store)
+        public async Task BulkInsert(DocumentStore store)
         {
             var sp = Stopwatch.StartNew();
             using (var bi = store.BulkInsert())
@@ -702,7 +683,7 @@ namespace BenchTests
 
             LogProgress($"BulkInsert", sp.ElapsedMilliseconds);
         }
-        private async Task ParallelBulkInserts(DocumentStore store, int multiplier)
+        public async Task ParallelBulkInserts(DocumentStore store, int multiplier)
         {
             var sp = Stopwatch.StartNew();
             await RunInParallel(multiplier,
@@ -716,17 +697,53 @@ namespace BenchTests
                 }, 10);
 
             LogProgress($"Parallel bulk inserts (x{multiplier})", sp.ElapsedMilliseconds);
-
         }
-        private async Task LoadDocumentsSerially(DocumentStore store)
+
+        public async Task SingleDocBatchesOneByOne(DocumentStore store)
         {
             List<string> IDs = new List<string>();
-            using (var session = store.OpenAsyncSession())
+            await GetDocumentIDs(store, IDs);
+
+            var sp = Stopwatch.StartNew();
+
+            for (var i = 0; i < DocumentsCount; i++)
             {
-                List<User> allUsers = await session.Query<User>().Take(DocumentsCount).ToListAsync();
-                IDs = allUsers.Select(x => session.Advanced.GetDocumentId(x)).ToList();
+                using (var session = store.OpenAsyncSession())                           
+                {
+                    session.Advanced.Patch<User, int>(IDs[i], x => x.Age, 14);
+                    await session.SaveChangesAsync();
+                }
             }
 
+            LogProgress($"SingleDocBatchesOneByOne", sp.ElapsedMilliseconds);
+        }
+
+        public async Task ParallelSingleDocBatches(DocumentStore store, int modifier)
+        {
+            BlockingCollection<string> IDsBC = new BlockingCollection<string>();
+            List<string> IDs = new List<string>();
+            await GetDocumentIDs(store, IDs);
+            IDs.ForEach(IDsBC.Add);
+
+            var sp = Stopwatch.StartNew();
+
+            await RunInParallel(modifier,
+                async i =>
+                {
+                    using (var session = store.OpenAsyncSession())
+                    {
+                        IDsBC.TryTake(out string id);
+                        session.Advanced.Patch<User,int>(id, x=>x.Age,14);
+                        await session.SaveChangesAsync();
+                    }
+                }, IDsBC.Count);
+            LogProgress($"Load {DocumentsCount} documents parallely x{modifier}", sp.ElapsedMilliseconds);
+        }
+
+        public async Task LoadDocumentsSerially(DocumentStore store)
+        {
+            List<string> IDs = new List<string>();
+            await GetDocumentIDs(store, IDs);
             var sp = Stopwatch.StartNew();
 
             foreach (var id in IDs)
@@ -736,18 +753,13 @@ namespace BenchTests
             }
             LogProgress($"Load {DocumentsCount} documents serially", sp.ElapsedMilliseconds);
         }
-        private async Task LoadDocumentsParallelly(DocumentStore store, int modifier)
+        public async Task LoadDocumentsParallelly(DocumentStore store, int modifier)
         {
-            BlockingCollection<string> IDs = new BlockingCollection<string>();
+            BlockingCollection<string> IDsBC = new BlockingCollection<string>();
+            List<string> IDs = new List<string>();            
+            await GetDocumentIDs(store, IDs);
+            IDs.ForEach(IDsBC.Add);
 
-            for (var i = 0; i < DocumentsCount / 100; i++)
-            {
-                using (var session = store.OpenAsyncSession())
-                {
-                    List<User> allUsers = await session.Query<User>().Skip(i * 100).Take(100).ToListAsync();
-                    allUsers.Select(x => session.Advanced.GetDocumentId(x)).ToList().ForEach(IDs.Add);
-                }
-            }
             var sp = Stopwatch.StartNew();
 
             await RunInParallel(modifier,
@@ -755,22 +767,18 @@ namespace BenchTests
                 {
                     using (var session = store.OpenAsyncSession())
                     {
-                        IDs.TryTake(out string id);
+                        IDsBC.TryTake(out string id);
                         await session.LoadAsync<User>(id);
                     }
-                }, IDs.Count);
+                }, IDsBC.Count);
             LogProgress($"Load {DocumentsCount} documents parallely x{modifier}", sp.ElapsedMilliseconds);
 
 
         }
-        private async Task LoadDocumentsByIdIn100DocsBatches(DocumentStore store)
+        public async Task LoadDocumentsByIdIn100DocsBatches(DocumentStore store)
         {
             List<string> IDs = new List<string>();
-            using (var session = store.OpenAsyncSession())
-            {
-                List<User> allUsers = await session.Query<User>().Take(DocumentsCount).ToListAsync();
-                IDs = allUsers.Select(x => session.Advanced.GetDocumentId(x)).ToList();
-            }
+            await GetDocumentIDs(store, IDs);
             var sp = Stopwatch.StartNew();
             for (var i = 0; i < DocumentsCount / 100; i++)
             {
@@ -781,7 +789,24 @@ namespace BenchTests
             }
             LogProgress($"Load {DocumentsCount} documents in 100 docs batches", sp.ElapsedMilliseconds);
         }
-        private async Task SimpleMapIndexing(DocumentStore store)
+
+        private async Task GetDocumentIDs(DocumentStore store, List<string> IDs)
+        {
+            using (var session = store.OpenAsyncSession())
+            {
+                var stream = await session.Advanced.StreamAsync<User>(
+                session.Query<User>()
+                    .Where(x => x.Name != "a")
+                    .Take(DocumentsCount)
+                    );
+                while (await stream.MoveNextAsync())
+                {
+                    IDs.Add(session.Advanced.GetDocumentId(stream.Current));
+                }
+            }
+        }
+
+        public async Task SimpleMapIndexing(DocumentStore store)
         {
             var sp = Stopwatch.StartNew();
             using (var session = store.OpenAsyncSession())
@@ -794,7 +819,7 @@ namespace BenchTests
             }
             LogProgress($"Simple map index, no results", sp.ElapsedMilliseconds);
         }
-        private async Task SimpleMapIndexQueryWithSingleDocumentResults(DocumentStore store, bool noCaching)
+        public async Task SimpleMapIndexQueryWithSingleDocumentResults(DocumentStore store, bool noCaching)
         {
             var sp = Stopwatch.StartNew();
 
@@ -814,7 +839,7 @@ namespace BenchTests
             }
             LogProgress($"Simple map index, {DocumentsCount} queries with unique single results {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
         }
-        private async Task SimpleMapIndexingAllResults(DocumentStore store, bool noCaching)
+        public async Task SimpleMapIndexingAllResults(DocumentStore store, bool noCaching)
         {
             var sp = Stopwatch.StartNew();
 
@@ -836,7 +861,7 @@ namespace BenchTests
             }
             LogProgress($"Simple map index, all results {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
         }
-        private async Task SimpleMapIndexingStreamingAllResults(DocumentStore store)
+        public async Task SimpleMapIndexingStreamingAllResults(DocumentStore store)
         {
             var sp = Stopwatch.StartNew();
 
@@ -860,7 +885,7 @@ namespace BenchTests
 
             LogProgress($"Simple map index streaming, all results", sp.ElapsedMilliseconds);
         }
-        private async Task MapReduceIndexingAllResults(DocumentStore store)
+        public async Task MapReduceIndexingAllResults(DocumentStore store)
         {
             var sp = Stopwatch.StartNew();
             using (var session = store.OpenAsyncSession())
@@ -877,7 +902,7 @@ namespace BenchTests
             }
             LogProgress($"Map reduce indexing, all results", sp.ElapsedMilliseconds);
         }
-        private async Task MapReduce1To1IndexingAllResults(DocumentStore store, bool noCaching)
+        public async Task MapReduce1To1IndexingAllResults(DocumentStore store, bool noCaching)
         {
             var sp = Stopwatch.StartNew();
             for (var i = 0; i < DocumentsCount / 100; i++)
@@ -905,7 +930,7 @@ namespace BenchTests
             }
             LogProgress($"Map reduce 1-1 indexing, all results, 100 docs batches {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
         }
-        private async Task SimpleMap100QueriesAllResults(DocumentStore store, bool noCaching)
+        public async Task SimpleMap100QueriesAllResults(DocumentStore store, bool noCaching)
         {
             var sp = Stopwatch.StartNew();
             for (int i = 0; i < 100; i++)
@@ -929,7 +954,7 @@ namespace BenchTests
             }
             LogProgress($"Simple 100 map index queries, 100 docs batches {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
         }
-        private async Task SimpleMap100QueriesParallelAllResults(DocumentStore store, int modifier, bool noCaching)
+        public async Task SimpleMap100QueriesParallelAllResults(DocumentStore store, int modifier, bool noCaching)
         {
             var sp = Stopwatch.StartNew();
             await RunInParallel(modifier,
@@ -955,7 +980,7 @@ namespace BenchTests
                 }, 100);
             LogProgress($"Simple map index, 100 queries parallel (x{modifier})all results {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
         }
-        private async Task SimpleQueryWithSimpleTransformer(DocumentStore store, bool noCaching)
+        public async Task SimpleQueryWithSimpleTransformer(DocumentStore store, bool noCaching)
         {
             var sp = Stopwatch.StartNew();
 
@@ -981,7 +1006,7 @@ namespace BenchTests
             }
             LogProgress($"100 queries with simple transformer, 100 docs batches {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
         }
-        private async Task SimpleParallel100QueriesWithSimpleTransformer(DocumentStore store, int modifier, bool noCaching = false)
+        public async Task SimpleParallel100QueriesWithSimpleTransformer(DocumentStore store, int modifier, bool noCaching = false)
         {
             var sp = Stopwatch.StartNew();
             await RunInParallel(modifier,
@@ -1010,7 +1035,7 @@ namespace BenchTests
 
             LogProgress($"100 queries parallel with simple transformer (x{modifier}), 100 docs batches {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
         }
-        private async Task SimpleQueryWithComplexTransformer(DocumentStore store, bool noCaching)
+        public async Task SimpleQueryWithComplexTransformer(DocumentStore store, bool noCaching)
         {
             var sp = Stopwatch.StartNew();
 
@@ -1038,7 +1063,7 @@ namespace BenchTests
             }
             LogProgress($"100 queries with simple transformer, 100 docs batches {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
         }
-        private async Task Simple100ParallelQueriesWithComplexTransformer(DocumentStore store, int modifier, bool noCaching = false)
+        public async Task Simple100ParallelQueriesWithComplexTransformer(DocumentStore store, int modifier, bool noCaching = false)
         {
             var sp = Stopwatch.StartNew();
             await RunInParallel(modifier,
@@ -1069,7 +1094,7 @@ namespace BenchTests
 
             LogProgress($"100 queries parallel with complex transformer (x{modifier}), 100 docs batches {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
         }
-        private void SubscriptionsSingleItemBatch(DocumentStore store)
+        public void SubscriptionsSingleItemBatch(DocumentStore store)
         {
             var sp = Stopwatch.StartNew();
             var subsName = store.Subscriptions.Create<User>();
@@ -1088,7 +1113,7 @@ namespace BenchTests
             }
             LogProgress($"Subscription, single doc batches", sp.ElapsedMilliseconds);
         }
-        private void Subscriptions1KItemsBatch(DocumentStore store)
+        public void Subscriptions1KItemsBatch(DocumentStore store)
         {
             var sp = Stopwatch.StartNew();
             var subsName = store.Subscriptions.Create<User>();
@@ -1107,7 +1132,7 @@ namespace BenchTests
             }
             LogProgress($"Subscription, 1K docs batches", sp.ElapsedMilliseconds);
         }
-        private async Task SubscriptionsCheckLatency(DocumentStore store)
+        public async Task SubscriptionsCheckLatency(DocumentStore store)
         {
 
             var subsName = store.Subscriptions.Create<User>();
@@ -1144,7 +1169,7 @@ namespace BenchTests
             }
 
         }
-        private void Subscriptions20InParallel200ItemsBatch(DocumentStore store)
+        public void Subscriptions20InParallel200ItemsBatch(DocumentStore store)
         {
             var sp = Stopwatch.StartNew();
             Parallel.For(0, 20,
@@ -1172,7 +1197,7 @@ namespace BenchTests
                 });
             LogProgress($"Subscription, 20 in parallel, 200 docs batches", sp.ElapsedMilliseconds);
         }
-        private async Task WaitForReplication(DocumentStore store)
+        public async Task WaitForReplication(DocumentStore store)
         {
             var sp = Stopwatch.StartNew();
             using (var session = store.OpenAsyncSession())
@@ -1183,7 +1208,7 @@ namespace BenchTests
             }
             LogProgress($"Documents replication", sp.ElapsedMilliseconds);
         }
-        private async Task WaitForExternalReplication(DocumentStore source, DocumentStore destination, string sourceDBName, string destinationDBName, string lastId, string replicationType)
+        public async Task WaitForExternalReplication(DocumentStore source, DocumentStore destination, string sourceDBName, string destinationDBName, string lastId, string replicationType)
         {
             var sp = Stopwatch.StartNew();
             using (var session = source.OpenAsyncSession(sourceDBName))
@@ -1193,7 +1218,7 @@ namespace BenchTests
             LogProgress($"Documents {replicationType} replication", sp.ElapsedMilliseconds);
         }
 
-        private async Task WaitForDocument(DocumentStore store, string id, string externalDBName)
+        public async Task WaitForDocument(DocumentStore store, string id, string externalDBName)
         {
             using (var session = store.OpenAsyncSession(externalDBName))
             {
@@ -1204,7 +1229,7 @@ namespace BenchTests
                 }
             }
         }
-        private async Task WaitForDocumentToReplicateAsync<T>(DocumentStore store, string id, string externalDBName)
+        public async Task WaitForDocumentToReplicateAsync<T>(DocumentStore store, string id, string externalDBName)
             where T : class
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -1215,7 +1240,7 @@ namespace BenchTests
                 await Task.WhenAny(docLoadTask, tcs.Task);
             }
         }
-        private async Task SetupReplicationAsync(DocumentStore fromStore, DocumentStore toStore, string fromDB, string toDB)
+        public async Task SetupReplicationAsync(DocumentStore fromStore, DocumentStore toStore, string fromDB, string toDB)
         {
             var databaseWatcher = new ExternalReplication(fromDB, $"ConnectionString-{toStore.Urls[0] + " (DB: " + toDB + ")"}");
 
@@ -1230,7 +1255,7 @@ namespace BenchTests
             await fromStore.Maintenance.ForDatabase(fromDB).SendAsync(op);
         }
 
-        private async Task SetupETLRavenReplication(DocumentStore fromStore, DocumentStore toStore, string fromDB, string toDB)
+        public async Task SetupETLRavenReplication(DocumentStore fromStore, DocumentStore toStore, string fromDB, string toDB)
         {
             var connectionStringName = $"RavenETLConnectionString-{toStore.Urls[0] + " (DB: " + toDB + ")"}";
 

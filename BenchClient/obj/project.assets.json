@@ -2727,7 +2727,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40": {
+      "RavenDB.Client/4.0.0-nightly-20171230-0502": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -4745,6 +4745,19 @@
         },
         "runtime": {
           "lib/netstandard1.3/Microsoft.WindowsAzure.Storage.dll": {}
+        }
+      },
+      "BenchTests/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "RavenDB.Client": "4.0.0-nightly-20171230-0502"
+        },
+        "compile": {
+          "bin/placeholder/BenchTests.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BenchTests.dll": {}
         }
       }
     }
@@ -7573,10 +7586,10 @@
         "newtonsoft.json.bson.nuspec"
       ]
     },
-    "RavenDB.Client/4.0.0-custom-40": {
-      "sha512": "0Kq/A7lrS45Mn8IYDuB10T0k4GY/Y6xYDWFwMCoTL1JhMa/OwLHGT4l4I/LOb40K9MklPetTxHyd0RbeBK7+jw==",
+    "RavenDB.Client/4.0.0-nightly-20171230-0502": {
+      "sha512": "39xbRAlOT3MG6Kc212nQqcdrgVxsV4aaYU94Vl3HtpHTiuQhVr7gK5m5LZ1DhQHUredCP7fWGS/edBwJLsezHQ==",
       "type": "package",
-      "path": "ravendb.client/4.0.0-custom-40",
+      "path": "ravendb.client/4.0.0-nightly-20171230-0502",
       "files": [
         "lib/netstandard1.3/Raven.Client.dll",
         "lib/netstandard1.3/Raven.Client.pdb",
@@ -7584,7 +7597,7 @@
         "lib/netstandard2.0/Raven.Client.dll",
         "lib/netstandard2.0/Raven.Client.pdb",
         "lib/netstandard2.0/Sparrow.dll",
-        "ravendb.client.4.0.0-custom-40.nupkg.sha512",
+        "ravendb.client.4.0.0-nightly-20171230-0502.nupkg.sha512",
         "ravendb.client.nuspec"
       ]
     },
@@ -12571,17 +12584,23 @@
         "windowsazure.storage.8.1.4.nupkg.sha512",
         "windowsazure.storage.nuspec"
       ]
+    },
+    "BenchTests/1.0.0": {
+      "type": "project",
+      "path": "../BenchTests/BenchTests.csproj",
+      "msbuildProject": "../BenchTests/BenchTests.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.0": [
+      "BenchTests >= 1.0.0",
       "Microsoft.AspNetCore.All >= 2.0.3",
       "Microsoft.NETCore.App >= 2.0.0",
-      "RavenDB.Client >= 4.0.0-custom-40"
+      "RavenDB.Client >= 4.0.0-nightly-20171230-0502"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\maxim\\.nuget\\packages\\": {},
+    "C:\\Users\\MAX\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
@@ -12590,33 +12609,34 @@
       "hideWarningsAndErrors": true
     },
     "restore": {
-      "projectUniqueName": "C:\\Users\\maxim\\source\\repos\\Bench4.0\\BenchClient\\BenchClient.csproj",
+      "projectUniqueName": "C:\\coding\\ravenbench\\BenchClient\\BenchClient.csproj",
       "projectName": "BenchClient",
-      "projectPath": "C:\\Users\\maxim\\source\\repos\\Bench4.0\\BenchClient\\BenchClient.csproj",
-      "packagesPath": "C:\\Users\\maxim\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\maxim\\source\\repos\\Bench4.0\\BenchClient\\obj\\",
+      "projectPath": "C:\\coding\\ravenbench\\BenchClient\\BenchClient.csproj",
+      "packagesPath": "C:\\Users\\MAX\\.nuget\\packages\\",
+      "outputPath": "C:\\coding\\ravenbench\\BenchClient\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\maxim\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\MAX\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.0"
       ],
       "sources": {
-        "C:\\GitRepositories\\ravenv4.0\\artifacts": {},
-        "C:\\GitRepositories\\ravenv4.0\\src\\Raven.Server\\bin\\Release": {},
-        "C:\\GitRepositories\\ravenv4.0\\src\\Sparrow\\bin\\Release": {},
-        "C:\\GitRepositories\\ravenv4.0\\test\\RachisTests\\bin\\Release": {},
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {},
+        "https://www.myget.org/F/ravendb/api/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp2.0": {
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\coding\\ravenbench\\BenchTests\\BenchTests.csproj": {
+              "projectPath": "C:\\coding\\ravenbench\\BenchTests\\BenchTests.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -12639,7 +12659,7 @@
           },
           "RavenDB.Client": {
             "target": "Package",
-            "version": "[4.0.0-custom-40, )"
+            "version": "[4.0.0-nightly-20171230-0502, )"
           }
         },
         "imports": [
