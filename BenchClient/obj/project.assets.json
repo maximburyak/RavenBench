@@ -7547,7 +7547,7 @@
       ]
     },
     "Newtonsoft.Json/10.0.3": {
-      "sha512": "hSXaFmh7hNCuEoC4XNY5DrRkLDzYHqPx/Ik23R4J86Z7PE/Y6YidhG602dFVdLBRSdG6xp9NabH3dXpcoxWvww==",
+      "sha512": "wBM7i7i3U2WX0ecor4zdVGvgrwFUjuigBoHKiL+nH39fCOpCPjBY3RDqJM32edvdyTAVdjzlccHsg41+/+zpSA==",
       "type": "package",
       "path": "newtonsoft.json/10.0.3",
       "files": [
@@ -12600,7 +12600,8 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\MAX\\.nuget\\packages\\": {},
+    "C:\\Users\\Maxim\\.nuget\\packages\\": {},
+    "C:\\Users\\Maxim\\.dotnet\\NuGetFallbackFolder": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
@@ -12612,14 +12613,15 @@
       "projectUniqueName": "C:\\coding\\ravenbench\\BenchClient\\BenchClient.csproj",
       "projectName": "BenchClient",
       "projectPath": "C:\\coding\\ravenbench\\BenchClient\\BenchClient.csproj",
-      "packagesPath": "C:\\Users\\MAX\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\Maxim\\.nuget\\packages\\",
       "outputPath": "C:\\coding\\ravenbench\\BenchClient\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
+        "C:\\Users\\Maxim\\.dotnet\\NuGetFallbackFolder",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\MAX\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Maxim\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -12627,8 +12629,9 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {},
-        "https://www.myget.org/F/ravendb/api/v3/index.json": {}
+        "C:\\coding\\ravenv4.0\\src\\Raven.Client\\bin\\Release": {},
+        "https://www.myget.org/F/ravendb/api/v3/index.json": {},
+        "https://www.nuget.org/api/v2/": {}
       },
       "frameworks": {
         "netcoreapp2.0": {

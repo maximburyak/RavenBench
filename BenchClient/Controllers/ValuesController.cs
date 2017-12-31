@@ -153,18 +153,5 @@ namespace BenchClient.Controllers
         {
             await Store.TestInstance.SerialStores(Store.Node1Instance);
         }
-
-        [Route("SerialStores")]
-        public async Task Get()
-        {
-            await Store.TestInstance.SerialStores(Store.Node1Instance);
-        }
-
-        // GET api/values
-        [Route("Stuff")]
-        public IEnumerable<string> GetStuff()
-        {
-            return new string[] { "stuff1", "stuff2" };
-        }       
     }
 }
