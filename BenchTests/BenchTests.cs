@@ -18,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -496,9 +497,9 @@ namespace BenchTests
             }
         }
 
-        public async Task ResetDatabase(string url, string databaseName, string nodeTagToCreateIn = "A")
+        public async Task ResetDatabase(string url, string databaseName, string nodeTagToCreateIn = "A", X509Certificate2 cert = null)
         {
-            using (var store = GenerateStore(url, databaseName))
+            using (var store = GenerateStore(url, databaseName, cert))
             {
                 try
                 {
@@ -528,14 +529,14 @@ namespace BenchTests
             }
         }
 
-        public async Task SerialStores(DocumentStore store)
+        public async Task SerialStores(DocumentStore store, bool setIDs = true)
         {
             var sp = Stopwatch.StartNew();
             for (int i = 0; i < DocumentsCount; i++)
             {
                 using (var session = store.OpenAsyncSession())
                 {
-                    await session.StoreAsync(GenerateUser(i, 30));
+                    await session.StoreAsync(GenerateUser(i, 30, setIDs));
                     await session.SaveChangesAsync();
                 }
             }
@@ -543,7 +544,7 @@ namespace BenchTests
             LogProgress($"Serial stores", sp.ElapsedMilliseconds);
         }
 
-        public async Task ParallelStores(DocumentStore store, int multiplier)
+        public async Task ParallelStores(DocumentStore store, int multiplier, bool setIDs = true)
         {
             var a = new Action(async () => { });
             var sp = Stopwatch.StartNew();
@@ -554,7 +555,7 @@ namespace BenchTests
 
                     using (var session = store.OpenAsyncSession())
                     {
-                        await session.StoreAsync(GenerateUser(i, 30));
+                        await session.StoreAsync(GenerateUser(i, 30, setIDs));
                         await session.SaveChangesAsync();
                     }
 
@@ -585,7 +586,7 @@ namespace BenchTests
                 i += itemsToTake;
             }
         }
-        public async Task SerialBatchStores(DocumentStore store)
+        public async Task SerialBatchStores(DocumentStore store, bool setIDs = true)
         {
 
             var sp = Stopwatch.StartNew();
@@ -594,7 +595,7 @@ namespace BenchTests
                 using (var session = store.OpenAsyncSession())
                 {
                     for (var j = 0; j < DocumentsCount / 10; j++)
-                        await session.StoreAsync(GenerateUser(i * (DocumentsCount / 10) + j, 30));
+                        await session.StoreAsync(GenerateUser(i * (DocumentsCount / 10) + j, 30, setIDs));
                     await session.SaveChangesAsync();
                 }
             }
@@ -602,7 +603,7 @@ namespace BenchTests
             LogProgress($"Serial batches stores", sp.ElapsedMilliseconds);
 
         }
-        public async Task<string> ParallelBatchStores(DocumentStore store, int multiplier, string dbName = null, bool waitForReplication = false, bool retreieveLastId = false)
+        public async Task<string> ParallelBatchStores(DocumentStore store, int multiplier, string dbName = null, bool waitForReplication = false, bool retreieveLastId = false, bool setIDs = true)
         {
             var idsAndEtags = new ConcurrentBag<(string DocId, int Etag)>();
 
@@ -614,7 +615,7 @@ namespace BenchTests
                     User lastEntity = null;
                     for (var j = 0; j < DocumentsCount / 10; j++)
                     {
-                        lastEntity = GenerateUser(i * (DocumentsCount / 10) + j, 30);
+                        lastEntity = GenerateUser(i * (DocumentsCount / 10) + j, 30, setIDs);
                         await session.StoreAsync(lastEntity);
                     }
 
@@ -649,11 +650,11 @@ namespace BenchTests
 
 
         }
-        private User GenerateUser(int i, int childWidth)
+        private User GenerateUser(int i, int childWidth, bool setId = true)
         {
             return new User
             {
-                Id = i.ToString(),
+                Id = setId?i.ToString():null,
                 Name = (i % 10).ToString(),
                 Age = i,
                 Balance = i * 4,
@@ -670,20 +671,20 @@ namespace BenchTests
             };
         }
 
-        public async Task BulkInsert(DocumentStore store)
+        public async Task BulkInsert(DocumentStore store, bool setIDs = true)
         {
             var sp = Stopwatch.StartNew();
             using (var bi = store.BulkInsert())
             {
                 for (var i = 0; i < DocumentsCount; i++)
                 {
-                    await bi.StoreAsync(GenerateUser(i, 30));
+                    await bi.StoreAsync(GenerateUser(i, 30,setIDs));
                 }
             };
 
             LogProgress($"BulkInsert", sp.ElapsedMilliseconds);
         }
-        public async Task ParallelBulkInserts(DocumentStore store, int multiplier)
+        public async Task ParallelBulkInserts(DocumentStore store, int multiplier, bool setIDs = true)
         {
             var sp = Stopwatch.StartNew();
             await RunInParallel(multiplier,
@@ -692,14 +693,14 @@ namespace BenchTests
                     using (var session = store.BulkInsert())
                     {
                         for (var j = 0; j < DocumentsCount / 10; j++)
-                            await session.StoreAsync(GenerateUser(i * (DocumentsCount / 10) + j, 30));
+                            await session.StoreAsync(GenerateUser(i * (DocumentsCount / 10) + j, 30, setIDs));
                     }
                 }, 10);
 
             LogProgress($"Parallel bulk inserts (x{multiplier})", sp.ElapsedMilliseconds);
         }
 
-        public async Task SingleDocBatchesOneByOne(DocumentStore store)
+        public async Task SingleDocPatchesSerial(DocumentStore store)
         {
             List<string> IDs = new List<string>();
             await GetDocumentIDs(store, IDs);
@@ -710,7 +711,7 @@ namespace BenchTests
             {
                 using (var session = store.OpenAsyncSession())                           
                 {
-                    session.Advanced.Patch<User, int>(IDs[i], x => x.Age, 14);
+                    session.Advanced.Increment<User, int>(IDs[i], x => x.Age,2);
                     await session.SaveChangesAsync();
                 }
             }
@@ -718,7 +719,7 @@ namespace BenchTests
             LogProgress($"SingleDocBatchesOneByOne", sp.ElapsedMilliseconds);
         }
 
-        public async Task ParallelSingleDocBatches(DocumentStore store, int modifier)
+        public async Task ParallelSingleDocPatches(DocumentStore store, int modifier)
         {
             BlockingCollection<string> IDsBC = new BlockingCollection<string>();
             List<string> IDs = new List<string>();
@@ -732,8 +733,8 @@ namespace BenchTests
                 {
                     using (var session = store.OpenAsyncSession())
                     {
-                        IDsBC.TryTake(out string id);
-                        session.Advanced.Patch<User,int>(id, x=>x.Age,14);
+                        IDsBC.TryTake(out string id);                        
+                        session.Advanced.Increment<User,int>(id, x=>x.Age,2);
                         await session.SaveChangesAsync();
                     }
                 }, IDsBC.Count);
@@ -794,14 +795,16 @@ namespace BenchTests
         {
             using (var session = store.OpenAsyncSession())
             {
-                var stream = await session.Advanced.StreamAsync<User>(
+                var stream = await session.Advanced.StreamAsync(
                 session.Query<User>()
                     .Where(x => x.Name != "a")
-                    .Take(DocumentsCount)
+                    .Take(DocumentsCount)                    
+                    .Select(x=>x.Id)
+                    .OfType<string>()
                     );
                 while (await stream.MoveNextAsync())
                 {
-                    IDs.Add(session.Advanced.GetDocumentId(stream.Current));
+                    IDs.Add(stream.Current.Document);
                 }
             }
         }
@@ -1285,12 +1288,13 @@ namespace BenchTests
         }
 
 
-        public DocumentStore GenerateStore(string url, string databaseName)
+        public DocumentStore GenerateStore(string url, string databaseName, X509Certificate2 cert = null)
         {
             DocumentStore documentStore = new DocumentStore
             {
                 Urls = new[] { url },
-                Database = databaseName
+                Database = databaseName,
+                Certificate = cert
             };
             documentStore.Conventions.MaxHttpCacheSize = new Size(this.CacheSizeInMB, SizeUnit.Megabytes);
             documentStore.Initialize();

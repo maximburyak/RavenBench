@@ -17,9 +17,18 @@ namespace BenchClient
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            var configuration = new ConfigurationBuilder()
+           .SetBasePath(Directory.GetCurrentDirectory())
+           .AddJsonFile("appsettings.json").Build();
+
+            var listeningPort = configuration["port"];
+            IWebHostBuilder webHostBuilder = WebHost.CreateDefaultBuilder(args);
+            if (string.IsNullOrEmpty(listeningPort) == false)
+                webHostBuilder = webHostBuilder.UseUrls($"http://*:{listeningPort}");
+            return webHostBuilder.UseStartup<Startup>()
                 .Build();
+        }
     }
 }

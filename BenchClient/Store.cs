@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace BenchClient
@@ -19,7 +20,7 @@ namespace BenchClient
             {
                 if (m_node1Instance == null)
                 {
-                    m_node1Instance = TestInstance?.GenerateStore(TestInstance.Node1Url, "Bench");
+                    m_node1Instance = TestInstance?.GenerateStore(TestInstance.Node1Url, "Bench", cert);
                 }
                 return m_node1Instance;
             }
@@ -37,7 +38,7 @@ namespace BenchClient
             {
                 if (m_node2Instance == null)
                 {
-                    m_node2Instance = TestInstance?.GenerateStore(TestInstance.Node2Url, "Bench");
+                    m_node2Instance = TestInstance?.GenerateStore(TestInstance.Node2Url, "Bench", cert);
                 }
                 return m_node2Instance;
             }
@@ -54,7 +55,7 @@ namespace BenchClient
             {
                 if (m_node3Instance == null)
                 {
-                    m_node1Instance = TestInstance.GenerateStore(TestInstance.Node3Url, "Bench");
+                    m_node3Instance = TestInstance.GenerateStore(TestInstance.Node3Url, "Bench", cert);
                 }
                 return m_node3Instance;
             }
@@ -66,7 +67,7 @@ namespace BenchClient
 
 
         public static BenchTest TestInstance;
-
+        public static X509Certificate2 cert;
         static Store()
         {
             var configuration = new ConfigurationBuilder()
@@ -76,13 +77,18 @@ namespace BenchClient
             var node1Url = configuration["node1Url"];
             var node2Url = configuration["node2Url"];
             var node3Url = configuration["node3Url"];
-            var documentsCount = configuration["documentsCoung"];
+            var documentsCount = configuration["documentsCount"];
             var cacheSizeInMB = configuration["cacheSizeInMB"];
+            var certPath = configuration["certPath"];
 
+            if (string.IsNullOrEmpty(certPath) == false)
+            {
+                cert = new X509Certificate2(certPath);
+            }
 
-            TestInstance = new BenchTests.BenchTest(node1Url ?? "http://localhsot:8080", 
-                node2Url ?? "http://localhsot:8081", 
-                node3Url ?? "http://localhsot:8082", 
+            TestInstance = new BenchTests.BenchTest(node1Url ?? "http://localhost:8080", 
+                node2Url ?? "http://localhost:8081", 
+                node3Url ?? "http://localhost:8082", 
                 documentsCount != null ? Int32.Parse(documentsCount) : 100_000, 
                 cacheSizeInMB!= null? long.Parse(cacheSizeInMB):1000
                 );           
@@ -91,9 +97,9 @@ namespace BenchClient
 
         public static void ChangeConfig(string node1Url, string node2Url, string node3Url,int? documentsCount, long? cacheSizeInMB)
         {
-             TestInstance = new BenchTests.BenchTest(node1Url ?? "http://localhsot:8080",
-                node2Url ?? "http://localhsot:8081",
-                node3Url ?? "http://localhsot:8082",
+             TestInstance = new BenchTests.BenchTest(node1Url ?? "http://localhost:8080",
+                node2Url ?? "http://localhost:8081",
+                node3Url ?? "http://localhost:8082",
                 documentsCount != null ? (int)(documentsCount) : TestInstance?.DocumentsCount ?? 100_000,
                 cacheSizeInMB != null ? (int)cacheSizeInMB  : TestInstance?.DocumentsCount ?? 1000
                 );
