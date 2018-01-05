@@ -1933,3 +1933,5 @@
 /BenchTests/bin/Release/netstandard2.0/BenchTests.pdb
 /BenchTests/obj/Release/netstandard2.0/BenchTests.dll
 /BenchTests/obj/Release/netstandard2.0/BenchTests.pdb
+/BenchClient/bin/Release/netcoreapp2.0/win10-x64/A4B80F8868335D08.raven-cluster-topology
+/BenchClient/bin/Release/netcoreapp2.0/win10-x64/E8C5E77DA25ABDE1.raven-topology

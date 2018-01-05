@@ -58373,7 +58373,7 @@
       ]
     },
     "Newtonsoft.Json/10.0.3": {
-      "sha512": "hSXaFmh7hNCuEoC4XNY5DrRkLDzYHqPx/Ik23R4J86Z7PE/Y6YidhG602dFVdLBRSdG6xp9NabH3dXpcoxWvww==",
+      "sha512": "wBM7i7i3U2WX0ecor4zdVGvgrwFUjuigBoHKiL+nH39fCOpCPjBY3RDqJM32edvdyTAVdjzlccHsg41+/+zpSA==",
       "type": "package",
       "path": "newtonsoft.json/10.0.3",
       "files": [
@@ -65132,45 +65132,41 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\maxim\\.nuget\\packages\\": {},
+    "C:\\Users\\Maxim\\.nuget\\packages\\": {},
+    "C:\\Users\\Maxim\\.dotnet\\NuGetFallbackFolder": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
-    "restoreSettings": {
-      "hideWarningsAndErrors": true
-    },
     "restore": {
-      "projectUniqueName": "C:\\Users\\maxim\\source\\repos\\Bench4.0\\BenchClient\\BenchClient.csproj",
+      "projectUniqueName": "C:\\coding\\ravenbench\\BenchClient\\BenchClient.csproj",
       "projectName": "BenchClient",
-      "projectPath": "C:\\Users\\maxim\\source\\repos\\Bench4.0\\BenchClient\\BenchClient.csproj",
-      "packagesPath": "C:\\Users\\maxim\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\maxim\\source\\repos\\Bench4.0\\BenchClient\\obj\\",
+      "projectPath": "C:\\coding\\ravenbench\\BenchClient\\BenchClient.csproj",
+      "packagesPath": "C:\\Users\\Maxim\\.nuget\\packages\\",
+      "outputPath": "C:\\coding\\ravenbench\\BenchClient\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
+        "C:\\Users\\Maxim\\.dotnet\\NuGetFallbackFolder",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\maxim\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Maxim\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.0"
       ],
       "sources": {
-        "C:\\GitRepositories\\ravenv4.0\\artifacts": {},
-        "C:\\GitRepositories\\ravenv4.0\\src\\Raven.Server\\bin\\Release": {},
-        "C:\\GitRepositories\\ravenv4.0\\src\\Sparrow\\bin\\Release": {},
-        "C:\\GitRepositories\\ravenv4.0\\test\\RachisTests\\bin\\Release": {},
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {},
-        "https://www.myget.org/F/ravendb/api/v3/index.json": {}
+        "C:\\coding\\ravenv4.0\\src\\Raven.Client\\bin\\Release": {},
+        "https://www.myget.org/F/ravendb/api/v3/index.json": {},
+        "https://www.nuget.org/api/v2/": {}
       },
       "frameworks": {
         "netcoreapp2.0": {
           "projectReferences": {
-            "C:\\Users\\maxim\\source\\repos\\Bench4.0\\BenchTests\\BenchTests.csproj": {
-              "projectPath": "C:\\Users\\maxim\\source\\repos\\Bench4.0\\BenchTests\\BenchTests.csproj"
+            "C:\\coding\\ravenbench\\BenchTests\\BenchTests.csproj": {
+              "projectPath": "C:\\coding\\ravenbench\\BenchTests\\BenchTests.csproj"
             }
           }
         }

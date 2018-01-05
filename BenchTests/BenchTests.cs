@@ -762,20 +762,77 @@ namespace BenchTests
             IDs.ForEach(IDsBC.Add);
 
             var sp = Stopwatch.StartNew();
+                        
 
             await RunInParallel(modifier,
                 async i =>
                 {
                     using (var session = store.OpenAsyncSession())
                     {
+                
                         IDsBC.TryTake(out string id);
                         await session.LoadAsync<User>(id);
                     }
+                
                 }, IDsBC.Count);
+            
             LogProgress($"Load {DocumentsCount} documents parallely x{modifier}", sp.ElapsedMilliseconds);
 
 
         }
+
+        private static User ExtractUser(BlittableJsonReaderObject y)
+        {
+            User result = new User();
+            result.Age = (int)(long)y["Age"];
+            result.Balance = (int)(long)y["Balance"];
+            result.BirthDate = DateTime.Parse(y["BirthDate"].ToString());            
+            result.Name = y["Name"].ToString();
+            result.UniqueId = y["UniqueId"].ToString();
+            result.Children = new List<User>();
+            var children = y["Children"] as BlittableJsonReaderArray;
+            if (children != null)
+            {
+                foreach (BlittableJsonReaderObject child in children)
+                {
+                    result.Children.Add(ExtractUser(child));
+                }
+            }
+
+            return result;
+        }
+
+        public async Task LoadDocumentsParallellyIn100DocsBatches(DocumentStore store, int modifier)
+        {
+            BlockingCollection<List<string>> IDsBC = new BlockingCollection<List<string>>();
+            List<string> IDs = new List<string>();
+            await GetDocumentIDs(store, IDs);
+
+            for (var i=0; i< DocumentsCount / 100; i++)
+            {
+                IDsBC.Add(IDs.Skip(i*100).Take(100).ToList());
+            }
+
+            var sp = Stopwatch.StartNew();            
+
+            await RunInParallel(modifier,
+                async i =>
+                {
+                    using (var session = store.OpenAsyncSession())
+                    {
+                        IDsBC.TryTake(out var ids);
+                        await session.Advanced.LoadIntoStreamAsync(ids, new MemoryStream());                        
+                    }
+                }, IDsBC.Count);
+
+            
+
+
+            LogProgress($"Load {DocumentsCount} documents in 100 docs batches  parallely x{modifier}", sp.ElapsedMilliseconds);
+        }
+
+
+
         public async Task LoadDocumentsByIdIn100DocsBatches(DocumentStore store)
         {
             List<string> IDs = new List<string>();
@@ -1297,6 +1354,22 @@ namespace BenchTests
                 Certificate = cert
             };
             documentStore.Conventions.MaxHttpCacheSize = new Size(this.CacheSizeInMB, SizeUnit.Megabytes);
+            var temp = documentStore.Conventions.DeserializeEntityFromBlittable;
+            documentStore.Conventions.DeserializeEntityFromBlittable = (x, y) =>
+            {
+                if (x == typeof(User))
+                {
+                    User result = ExtractUser(y);
+
+                    return result;
+                }
+                else
+                {
+                    return temp(x, y);
+                }
+                
+            };
+
             documentStore.Initialize();
             return documentStore;
         }
