@@ -853,8 +853,7 @@ namespace BenchTests
             using (var session = store.OpenAsyncSession())
             {
                 var stream = await session.Advanced.StreamAsync(
-                session.Query<User>()
-                    .Where(x => x.Name != "a")
+                session.Query<User>()                    
                     .Take(DocumentsCount)                    
                     .Select(x=>x.Id)
                     .OfType<string>()
@@ -870,10 +869,10 @@ namespace BenchTests
         {
             var sp = Stopwatch.StartNew();
             using (var session = store.OpenAsyncSession())
-            {
+            {                                
                 await session.Query<User>()
-                    .Customize(x => x.WaitForNonStaleResults())
-                    .Where(x => x.Name == "5a")
+                    .Customize(x => x.WaitForNonStaleResults(TimeSpan.FromHours(10)))
+                    .Where(x => x.Age <-1)
                     .Take(DocumentsCount)
                     .ToListAsync();
             }
@@ -893,7 +892,7 @@ namespace BenchTests
                             if (noCaching)
                                 x.NoCaching();
                         })
-                        .Where(x => x.UniqueId == i.ToString())
+                        .Where(x => x.Age == i)
                         .ToListAsync();
                 }
             }
@@ -913,7 +912,7 @@ namespace BenchTests
                             if (noCaching)
                                 x.NoCaching();
                         })
-                        .Where(x => x.Name != "a")
+                        .Where(x => x.Age != -1)
                         .Skip(i * 100)
                         .Take(100)
                         .ToListAsync();
@@ -929,7 +928,7 @@ namespace BenchTests
             {
                 await session.Query<User>()
                             .Customize(x => x.WaitForNonStaleResults())
-                            .Where(x => x.Name != "a")
+                            .Where(x => x.Age == 1)
                             .Take(1).ToListAsync();
             }
 
@@ -937,7 +936,7 @@ namespace BenchTests
             {
                 var stream = await session.Advanced.StreamAsync<User>(
                 session.Query<User>()
-                    .Where(x => x.Name != "a")
+                    .Where(x => x.Age != -1)
                     .Take(DocumentsCount)
                     );
                 while (await stream.MoveNextAsync()) ;
@@ -999,15 +998,16 @@ namespace BenchTests
                 {
                     using (var session = store.OpenAsyncSession())
                     {
+                        var min = j * 100;
+                        var max = j * 100 + 100;                                                                    
+
                         await session.Query<User>()
                             .Customize(x => {
                                 x.WaitForNonStaleResults();
                                 if (noCaching)
                                     x.NoCaching();
-                            })
-                            .Where(x => x.Name != "a")
-                            .Skip(j * 100)
-                            .Take(100)
+                            })                            
+                            .Where(x => x.Age >= min && x.Age <= max)
                             .ToListAsync();
                     }
                 }
@@ -1024,20 +1024,48 @@ namespace BenchTests
                     {
                         using (var session = store.OpenAsyncSession())
                         {
+                            var min = j * 100;
+                            var max = j * 100 + 100;                                            
+
                             await session.Query<User>()
                             .Customize(x => {
                                 x.WaitForNonStaleResults();
                                 if (noCaching)
                                     x.NoCaching();
                             })
-                            .Where(x => x.Name != "a")
-                            .Skip(j * 100)
-                            .Take(100)
+                            .Where(x => x.Age >= min && x.Age <= max)
                             .ToListAsync();
 
                         }
                     }
                 }, 100);
+            LogProgress($"Simple map index, 100 queries parallel (x{modifier})all results {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
+        }
+
+        public async Task SimpleMapQueriesParallelAllResults(DocumentStore store, int modifier, bool noCaching)
+        {
+            var sp = Stopwatch.StartNew();
+            await RunInParallel(modifier,
+                async i =>
+                {                    
+                    using (var session = store.OpenAsyncSession())
+                    {
+                        var min = i * 100;
+                        var max = i * 100 + 100;
+
+                        await session.Query<User>()
+                        .Customize(x => {
+                            x.WaitForNonStaleResults();
+                            if (noCaching)
+                                x.NoCaching();
+                        })
+                        .Where(x => x.Age >= min && x.Age <= max)
+                        .Take(100)
+                        .ToListAsync();
+
+                    }
+                    
+                }, DocumentsCount/100);
             LogProgress($"Simple map index, 100 queries parallel (x{modifier})all results {(noCaching ? "no caching" : "with caching")}", sp.ElapsedMilliseconds);
         }
         public async Task SimpleQueryWithSimpleTransformer(DocumentStore store, bool noCaching)
@@ -1048,6 +1076,9 @@ namespace BenchTests
             {
                 using (var session = store.OpenAsyncSession())
                 {
+                    var min = i * 100;
+                    var max = i * 100 + 100;
+
                     await session.Query<User>()
                          .Customize(x => {
                              x.WaitForNonStaleResults();
@@ -1059,7 +1090,7 @@ namespace BenchTests
                             x.Name,
                             x.Age
                         })
-                        .Skip(i * 100)
+                        .Where(x => x.Age >= min && x.Age <= max)                        
                         .Take(100)
                         .ToListAsync();
                 }
@@ -1076,14 +1107,16 @@ namespace BenchTests
                     {
                         using (var session = store.OpenAsyncSession())
                         {
+                            var min = j * 100;
+                            var max = j * 100 + 100;                    
+                                 
                             await session.Query<User>()
                                 .Customize(x => {
                                     x.WaitForNonStaleResults();
                                     if (noCaching)
                                         x.NoCaching();
                                 })
-                                .Skip(j * 100)
-                                .Take(100)
+                                .Where(x => x.Age >= min && x.Age <= max)
                                 .Select(x => new
                                 {
                                     x.Name,
@@ -1103,6 +1136,10 @@ namespace BenchTests
             {
                 using (var session = store.OpenAsyncSession())
                 {
+                    var min = i * 100;
+                    var max = i * 100 + 100;                    
+                    
+
                     await session.Query<User>()
                         .Customize(x =>
                         {
@@ -1110,13 +1147,13 @@ namespace BenchTests
                             if (noCaching)
                                 x.NoCaching();
                         })
+                        .Where(x => x.Age >= min && x.Age <= max)
                         .Select(x => new
                         {
                             x.Name,
                             x.Age,
                             BalanceSum = x.Children.Sum(c => c.Balance + c.Age)
-                        })
-                        .Skip(i * 100)
+                        })                        
                         .Take(100)
                         .ToListAsync();
                 }
@@ -1133,19 +1170,22 @@ namespace BenchTests
                     {
                         using (var session = store.OpenAsyncSession())
                         {
+                            var min = j * 100;
+                            var max = j * 100 + 100;
+
                             await session.Query<User>()
                                 .Customize(x => {
                                     x.WaitForNonStaleResults();
                                     if (noCaching)
                                         x.NoCaching();
                                 })
+                                .Where(x => x.Age >= min && x.Age <= max)
                                 .Select(x => new
                                 {
                                     x.Name,
                                     x.Age,
                                     BalanceSum = x.Children.Sum(c => c.Balance + c.Age)
-                                })
-                                .Skip(j * 100)
+                                })                                
                                 .Take(100)
                                 .ToListAsync();
                         }

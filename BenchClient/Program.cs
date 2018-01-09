@@ -20,8 +20,7 @@ namespace BenchClient
         }
 
         public static IWebHost BuildWebHost(string[] args)
-        {
-            ServicePointManager.DefaultConnectionLimit = 200;
+        {            
             ThreadPool.SetMinThreads(50, 50);
 
             var configuration = new ConfigurationBuilder()

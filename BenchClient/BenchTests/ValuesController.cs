@@ -19,8 +19,52 @@ namespace BenchClient.Controllers
         {
             var p = Stopwatch.StartNew();
             await Store.TestInstance.ResetDatabase(Store.Node1Instance.Urls[0], "bench");
-            Store.Node1Instance = null;
-            return $"total: {p.ElapsedMilliseconds}";
+            try
+            {
+                Store.Node1Instance?.Dispose();
+            }
+            catch { }
+            finally
+            {
+                Store.Node1Instance = null;
+            }
+            return $"ok";
+        }
+
+        [HttpGet("ResetStores/{setIDs:bool}")]
+        public async Task<string> ResetStores(bool setIDs)
+        {
+            try
+            {
+                Store.Node1Instance?.Dispose();
+            }
+            catch { }
+            finally
+            {
+                Store.Node1Instance = null;
+            }
+
+            try
+            {
+                Store.Node2Instance?.Dispose();
+            }
+            catch { }
+            finally
+            {
+                Store.Node2Instance = null;
+            }
+
+            try
+            {
+                Store.Node3Instance?.Dispose();
+            }
+            catch { }
+            finally
+            {
+                Store.Node3Instance = null;
+            }
+            
+            return $"ok";
         }
 
         [HttpGet("SerialStores/{setIDs:bool}")]
@@ -103,6 +147,14 @@ namespace BenchClient.Controllers
             return $"total: {p.ElapsedMilliseconds}; rate: { (int)(Store.TestInstance.DocumentsCount /p.Elapsed.TotalSeconds ) }";
         }
 
+        [HttpGet("SimpleMapIndexing")]
+        public async Task<string> SimpleMapIndexing()
+        {
+            var p = Stopwatch.StartNew();
+            await Store.TestInstance.SimpleMapIndexing(Store.Node1Instance);
+            return $"total: {p.ElapsedMilliseconds}; rate: { (int)(Store.TestInstance.DocumentsCount / p.Elapsed.TotalSeconds) }";
+        }
+
         [HttpGet("LoadDocumentsParallellyIn100DocsBatchesNoSerialization/{parallelism:int}")]
         public async Task<string> LoadDocumentsParallellyIn100DocsBatchesNoSerialization(int parallelism)
         {
@@ -119,6 +171,22 @@ namespace BenchClient.Controllers
             return $"total: {p.ElapsedMilliseconds}; rate: { (int)(Store.TestInstance.DocumentsCount /p.Elapsed.TotalSeconds ) }";
         }
 
+        [HttpGet("SimpleMapQueriesParallelAllResults/{noCaching:bool}/{parallelism:int}")]
+        public async Task<string> SimpleMapQueriesParallelAllResults(bool noCaching, int parallelism)
+        {
+            var p = Stopwatch.StartNew();
+            try
+            {
+                await Store.TestInstance.SimpleMapQueriesParallelAllResults(Store.Node1Instance, parallelism, noCaching);
+                return $"total: {p.ElapsedMilliseconds}; rate: { (int)(Store.TestInstance.DocumentsCount / p.Elapsed.TotalSeconds) }";
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
+            
+        }
+        
         [HttpGet("SimpleMap100Queries/{noCaching:bool}/{parallelism:int}")]
         public async Task<string> SimpleMap100Queries(bool noCaching, int parallelism)
         {
@@ -268,11 +336,24 @@ function GoToPath(controller, path){
             }            
 		}  
 	}		
+
+    var beginTime = Date.now();
     controller.parentNode.childNodes[1].textContent = 'waiting...';
+
+    var timeoutObject = setInterval(function(){ 
+        controller.parentNode.childNodes[1].textContent = 'waiting...' + (Date.now() - beginTime) + ' ms passed';
+        }, 
+        100);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function(){
-        if (this.readyState > 2 && this.status == 200) {
-            controller.parentNode.childNodes[1].textContent = this.responseText;            
+        if (this.readyState ==4 ){
+            clearInterval(timeoutObject);
+            if (this.status == 200) {
+                controller.parentNode.childNodes[1].textContent = this.responseText;            
+            }
+            else {
+                alert(this.responseText);
+            }
         }
     };
     xhttp.open('GET', path, true);
