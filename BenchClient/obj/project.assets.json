@@ -2727,7 +2727,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -4751,7 +4751,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -7453,7 +7453,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -9820,7 +9820,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -12522,7 +12522,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -14889,7 +14889,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -17591,7 +17591,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -19975,7 +19975,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -22677,7 +22677,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -25061,7 +25061,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -27763,7 +27763,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -30147,7 +30147,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -32849,7 +32849,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -35233,7 +35233,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -37935,7 +37935,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -40319,7 +40319,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -43021,7 +43021,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -45405,7 +45405,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -48107,7 +48107,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -50491,7 +50491,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -53193,7 +53193,7 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
-      "RavenDB.Client/4.0.0-custom-40-maxim1": {
+      "RavenDB.Client/4.0.0-nightly-20180108-1600": {
         "type": "package",
         "dependencies": {
           "Lambda2Js.Signed": "3.0.1",
@@ -55577,7 +55577,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "RavenDB.Client": "4.0.0-custom-40-maxim1"
+          "RavenDB.Client": "4.0.0-nightly-20180108-1600"
         },
         "compile": {
           "bin/placeholder/BenchTests.dll": {}
@@ -58373,7 +58373,7 @@
       ]
     },
     "Newtonsoft.Json/10.0.3": {
-      "sha512": "hSXaFmh7hNCuEoC4XNY5DrRkLDzYHqPx/Ik23R4J86Z7PE/Y6YidhG602dFVdLBRSdG6xp9NabH3dXpcoxWvww==",
+      "sha512": "wBM7i7i3U2WX0ecor4zdVGvgrwFUjuigBoHKiL+nH39fCOpCPjBY3RDqJM32edvdyTAVdjzlccHsg41+/+zpSA==",
       "type": "package",
       "path": "newtonsoft.json/10.0.3",
       "files": [
@@ -58412,10 +58412,10 @@
         "newtonsoft.json.bson.nuspec"
       ]
     },
-    "RavenDB.Client/4.0.0-custom-40-maxim1": {
-      "sha512": "aJgYubDbMyqBG1w5HBkqFBB7e3BFYhcyzkzyzOy/UkBVFnaAvqRex4kwoSR8O9fOVE6GY+zKfMeHuECv7OwRAg==",
+    "RavenDB.Client/4.0.0-nightly-20180108-1600": {
+      "sha512": "Nq3/RG9o48PHK1FD9qiyUWtZQ3J6b+f08QKApjWWvurWqCAq7jaUbjVDN497Empt34OGb6rS53c51NBQXMRa9Q==",
       "type": "package",
-      "path": "ravendb.client/4.0.0-custom-40-maxim1",
+      "path": "ravendb.client/4.0.0-nightly-20180108-1600",
       "files": [
         "lib/netstandard1.3/Raven.Client.dll",
         "lib/netstandard1.3/Raven.Client.pdb",
@@ -58423,7 +58423,7 @@
         "lib/netstandard2.0/Raven.Client.dll",
         "lib/netstandard2.0/Raven.Client.pdb",
         "lib/netstandard2.0/Sparrow.dll",
-        "ravendb.client.4.0.0-custom-40-maxim1.nupkg.sha512",
+        "ravendb.client.4.0.0-nightly-20180108-1600.nupkg.sha512",
         "ravendb.client.nuspec"
       ]
     },
@@ -65128,47 +65128,48 @@
       "BenchTests >= 1.0.0",
       "Microsoft.AspNetCore.All >= 2.0.3",
       "Microsoft.NETCore.App >= 2.0.0",
-      "RavenDB.Client >= 4.0.0-custom-40-maxim1"
+      "RavenDB.Client >= 4.0.0-nightly-20180108-1600"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\maxim\\.nuget\\packages\\": {},
+    "C:\\Users\\Maxim\\.nuget\\packages\\": {},
+    "C:\\Users\\Maxim\\.dotnet\\NuGetFallbackFolder": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
+    "restoreSettings": {
+      "hideWarningsAndErrors": true
+    },
     "restore": {
-      "projectUniqueName": "C:\\GitRepositories\\ravenbench\\BenchClient\\BenchClient.csproj",
+      "projectUniqueName": "C:\\coding\\ravenbench\\BenchClient\\BenchClient.csproj",
       "projectName": "BenchClient",
-      "projectPath": "C:\\GitRepositories\\ravenbench\\BenchClient\\BenchClient.csproj",
-      "packagesPath": "C:\\Users\\maxim\\.nuget\\packages\\",
-      "outputPath": "C:\\GitRepositories\\ravenbench\\BenchClient\\obj\\",
+      "projectPath": "C:\\coding\\ravenbench\\BenchClient\\BenchClient.csproj",
+      "packagesPath": "C:\\Users\\Maxim\\.nuget\\packages\\",
+      "outputPath": "C:\\coding\\ravenbench\\BenchClient\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
+        "C:\\Users\\Maxim\\.dotnet\\NuGetFallbackFolder",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\maxim\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Maxim\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.0"
       ],
       "sources": {
-        "C:\\GitRepositories\\ravenv4.0\\artifacts": {},
-        "C:\\GitRepositories\\ravenv4.0\\src\\Raven.Client\\bin\\Release": {},
-        "C:\\GitRepositories\\ravenv4.0\\src\\Raven.Server\\bin\\Release": {},
-        "C:\\GitRepositories\\ravenv4.0\\src\\Sparrow\\bin\\Release": {},
-        "C:\\GitRepositories\\ravenv4.0\\test\\RachisTests\\bin\\Release": {},
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {},
-        "https://www.myget.org/F/ravendb/api/v3/index.json": {}
+        "C:\\coding\\ravenv4.0\\src\\Raven.Client\\bin\\Release": {},
+        "https://www.myget.org/F/ravendb/api/v3/index.json": {},
+        "https://www.nuget.org/api/v2/": {}
       },
       "frameworks": {
         "netcoreapp2.0": {
           "projectReferences": {
-            "C:\\GitRepositories\\ravenbench\\BenchTests\\BenchTests.csproj": {
-              "projectPath": "C:\\GitRepositories\\ravenbench\\BenchTests\\BenchTests.csproj"
+            "C:\\coding\\ravenbench\\BenchTests\\BenchTests.csproj": {
+              "projectPath": "C:\\coding\\ravenbench\\BenchTests\\BenchTests.csproj"
             }
           }
         }
@@ -65193,7 +65194,7 @@
           },
           "RavenDB.Client": {
             "target": "Package",
-            "version": "[4.0.0-custom-40-maxim1, )"
+            "version": "[4.0.0-nightly-20180108-1600, )"
           }
         },
         "imports": [

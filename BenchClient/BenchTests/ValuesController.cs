@@ -280,7 +280,7 @@ namespace BenchClient.Controllers
         public async Task<string> SimpleMapIndexingAllResults(bool noCaching)
         {
             var p = Stopwatch.StartNew();
-            await Store.TestInstance.SimpleMapIndexingAllResults(Store.Node1Instance, noCaching);
+            await Store.TestInstance.SimpleMapQueryAllResults(Store.Node1Instance, noCaching);
             return $"total: {p.ElapsedMilliseconds}; rate: { (int)(Store.TestInstance.DocumentsCount /p.Elapsed.TotalSeconds ) }";
         }
 
