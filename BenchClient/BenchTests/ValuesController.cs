@@ -71,7 +71,7 @@ namespace BenchClient.Controllers
         public async Task<string> SerialStores(bool setIDs)
         {
             var p = Stopwatch.StartNew();
-            await Store.TestInstance.SerialStores(Store.Node1Instance, setIDs);
+            var result = await Store.TestInstance.SerialStores(Store.Node1Instance, setIDs);
             return $"total: {p.ElapsedMilliseconds}; rate: { (int)(Store.TestInstance.DocumentsCount /p.Elapsed.TotalSeconds ) }";
         }
 
@@ -191,7 +191,7 @@ namespace BenchClient.Controllers
         public async Task<string> SimpleMap100Queries(bool noCaching, int parallelism)
         {
             var p = Stopwatch.StartNew();
-            await Store.TestInstance.SimpleMap100QueriesParallelAllResults(Store.Node1Instance, parallelism, noCaching);
+            await Store.TestInstance.SimpleFullParallelMapQueriesAllResults(Store.Node1Instance, parallelism, noCaching);
             return $"total: {p.ElapsedMilliseconds}; rate: { (int)(Store.TestInstance.DocumentsCount /p.Elapsed.TotalSeconds ) }";
         }
 
@@ -207,7 +207,7 @@ namespace BenchClient.Controllers
         public async Task<string> SimpleParallel100QueriesWithSimpleTransformer(bool noCaching, int parallelism)
         {
             var p = Stopwatch.StartNew();
-            await Store.TestInstance.SimpleParallel100QueriesWithSimpleTransformer(Store.Node1Instance, parallelism, noCaching);
+            await Store.TestInstance.SimpleFullParallelQueriesWithSimpleTransformer(Store.Node1Instance, parallelism, noCaching);
             return $"total: {p.ElapsedMilliseconds}; rate: { (int)(Store.TestInstance.DocumentsCount /p.Elapsed.TotalSeconds ) }";
         }
 
@@ -223,7 +223,7 @@ namespace BenchClient.Controllers
         public async Task<string> Simple100ParallelQueriesWithComplexTransformer(bool noCaching, int parallelism)
         {
             var p = Stopwatch.StartNew();
-            await Store.TestInstance.Simple100ParallelQueriesWithComplexTransformer(Store.Node1Instance, parallelism, noCaching);
+            await Store.TestInstance.SimpleFullParallelQueriesWithComplexTransformer(Store.Node1Instance, parallelism, noCaching);
             return $"total: {p.ElapsedMilliseconds}; rate: { (int)(Store.TestInstance.DocumentsCount /p.Elapsed.TotalSeconds ) }";
         }
 
