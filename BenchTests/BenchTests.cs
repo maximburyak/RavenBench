@@ -1,13 +1,13 @@
 ﻿using Raven.Client;
 using Raven.Client.Documents;
+using Raven.Client.Documents.Operations.ConnectionStrings;
+using Raven.Client.Documents.Operations.ETL;
+using Raven.Client.Documents.Operations.Replication;
 using Raven.Client.Documents.Subscriptions;
 using Raven.Client.Http;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Commands;
-using Raven.Client.ServerWide.ETL;
 using Raven.Client.ServerWide.Operations;
-using Raven.Client.ServerWide.Operations.ConnectionStrings;
-using Raven.Client.ServerWide.Operations.ETL;
 using Sparrow;
 using Sparrow.Json;
 using System;
@@ -202,9 +202,10 @@ namespace BenchTests
 
         public async Task RegisterOperationAsync(Func<Task<long>> operation)
         {
+            var operationDuration = Stopwatch.StartNew();
             try
             {
-                var operationDuration = Stopwatch.StartNew();
+                
                 var docCount = await operation().ConfigureAwait(false);
                 operationDuration.Stop();
 
@@ -241,7 +242,7 @@ namespace BenchTests
             }
             catch (Exception ex)
             {
-                ProcessFailure(ex,)
+                ProcessFailure(ex, operationDuration.ElapsedMilliseconds);
             }
         }
     } 
